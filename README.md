@@ -55,6 +55,8 @@ backend/README.md
 
 The mobile app is built with **Expo** and consumes the BurgerHub API.
 
+The mobile app includes a simple registration flow to allow reviewers to create users without relying on pre-seeded data.”
+
 ### How to run the mobile app
 ```bash
 cd mobile

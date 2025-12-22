@@ -15,7 +15,6 @@ export default function BurgerDetailScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
-    console.log('loading burger', id);
     if (!id) return;
     setError(null);
     setLoading(true);
@@ -23,7 +22,6 @@ export default function BurgerDetailScreen() {
       const data = await burgersApi.getById(String(id));
       setBurger(data);
     } catch (e) {
-      console.error('error loading burger', e);
       setError(getErrorMessage(e));
     } finally {
       setLoading(false);
@@ -37,9 +35,9 @@ export default function BurgerDetailScreen() {
   const BackButton = () => (
     <Pressable
       onPress={() => router.replace('/(app)/burgers')}
-      style={{ paddingVertical: 8, paddingRight: 16 }}
+      style={{ paddingVertical: 8, paddingLeft: 16 }}
     >
-      <Text style={{ fontSize: 16, color: '#007AFF' }}>← Back</Text>
+      <Text>← Back</Text>
     </Pressable>
   );
 

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { burgersApi } from '../../../src/features/burgers/api';
 import { getErrorMessage } from '../../../src/shared/lib/http';
+import { Input, Button } from '../../../src/shared/ui';
 
 export default function NewBurgerScreen() {
   const router = useRouter();
 
   const [name, setName] = useState('');
-  const [ingredients, setIngredients] = useState(''); // comma-separated
+  const [ingredients, setIngredients] = useState('');
   const [image, setImage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,16 +31,13 @@ export default function NewBurgerScreen() {
     setError(null);
 
     try {
-      console.log('creating burger', n, ing);
       const created = await burgersApi.create({
         name: n,
         ingredients: ing,
       });
 
-      console.log('created burger', created);
       router.push(`/(app)/burgers/${created.id}`);
     } catch (e) {
-      console.error('error creating burger', e);
       setError(getErrorMessage(e));
     } finally {
       setSubmitting(false);
@@ -46,47 +45,41 @@ export default function NewBurgerScreen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, gap: 12 }}>
+    <SafeAreaView style={{ flex: 1, padding: 16, gap: 12 }}>
+      <Button
+        title="← Back"
+        variant="link"
+        onPress={() => router.back()}
+        style={{ alignSelf: 'flex-start', paddingLeft: 0 }}
+      />
+
       <Text style={{ fontSize: 22, fontWeight: '700' }}>Create Burger</Text>
 
-      <TextInput
+      <Input
         placeholder="Name"
         value={name}
         onChangeText={setName}
         editable={!submitting}
-        style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
       />
 
-      <TextInput
+      <Input
         placeholder="Ingredients (comma separated)"
         value={ingredients}
         onChangeText={setIngredients}
         editable={!submitting}
-        style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
       />
 
-      <TextInput
+      <Input
         placeholder="Image URL (optional)"
         value={image}
         onChangeText={setImage}
         editable={!submitting}
         autoCapitalize="none"
-        style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
       />
 
-      {error ? <Text>Error: {error}</Text> : null}
+      {error ? <Text style={{ color: '#ef4444' }}>Error: {error}</Text> : null}
 
-      <Pressable
-        onPress={submit}
-        disabled={submitting}
-        style={{ padding: 12, borderWidth: 1, borderRadius: 10, alignItems: 'center' }}
-      >
-        {submitting ? <ActivityIndicator /> : <Text>Create</Text>}
-      </Pressable>
-
-      <Pressable onPress={() => router.back()} style={{ padding: 12, alignItems: 'center' }}>
-        <Text>Cancel</Text>
-      </Pressable>
-    </View>
+      <Button title="Create" onPress={submit} loading={submitting} />
+    </SafeAreaView>
   );
 }

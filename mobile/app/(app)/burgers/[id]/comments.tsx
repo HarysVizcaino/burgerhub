@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Pressable, TextInput } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { commentsApi } from '../../../../src/features/comments/api';
 import type { CommentDto } from '../../../../src/features/comments/types';
 import { getErrorMessage } from '../../../../src/shared/lib/http';
+import { Input, Button } from '../../../../src/shared/ui';
 
 export default function BurgerCommentsScreen() {
   const router = useRouter();
@@ -61,19 +62,15 @@ export default function BurgerCommentsScreen() {
 
   const canLoadMore = items.length < total;
 
-  const BackButton = () => (
-    <Pressable
-      onPress={() => router.back()}
-      style={{ paddingVertical: 8, paddingRight: 16 }}
-    >
-      <Text style={{ fontSize: 16, color: '#007AFF' }}>← Back</Text>
-    </Pressable>
-  );
-
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, padding: 16 }}>
-        <BackButton />
+        <Button
+          title="← Back"
+          variant="link"
+          onPress={() => router.back()}
+          style={{ alignSelf: 'flex-start', paddingLeft: 0 }}
+        />
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>
@@ -83,80 +80,70 @@ export default function BurgerCommentsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
-      <BackButton />
+      <Button
+        title="← Back"
+        variant="link"
+        onPress={() => router.back()}
+        style={{ alignSelf: 'flex-start', paddingLeft: 0 }}
+      />
       <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 12 }}>Comments</Text>
 
       {error ? (
         <View style={{ gap: 10, marginBottom: 12 }}>
-          <Text>Error: {error}</Text>
-          <Pressable
+          <Text style={{ color: '#ef4444' }}>Error: {error}</Text>
+          <Button
+            title="Retry"
+            variant="secondary"
             onPress={() => {
               setLoading(true);
               load(1);
             }}
-            style={{ padding: 12, borderWidth: 1, borderRadius: 10, alignItems: 'center' }}
-          >
-            <Text>Retry</Text>
-          </Pressable>
+          />
         </View>
       ) : null}
 
       <View style={{ gap: 8, marginBottom: 12 }}>
-        <TextInput
+        <Input
           value={text}
           onChangeText={setText}
           placeholder="Write a comment..."
           editable={!submitting}
-          style={{ borderWidth: 1, borderRadius: 10, padding: 12 }}
         />
 
-        <Pressable
+        <Button
+          title="Post comment"
           onPress={submit}
-          disabled={submitting || !text.trim()}
-          style={{
-            padding: 12,
-            borderWidth: 1,
-            borderRadius: 10,
-            alignItems: 'center',
-            opacity: submitting || !text.trim() ? 0.5 : 1,
-          }}
-        >
-          {submitting ? <ActivityIndicator /> : <Text>Post comment</Text>}
-        </Pressable>
+          loading={submitting}
+          disabled={!text.trim()}
+        />
       </View>
 
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={{ paddingVertical: 12, borderBottomWidth: 1 }}>
+          <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
             <Text style={{ fontSize: 15 }}>{item.text}</Text>
 
-            <Text style={{ fontSize: 12, marginTop: 6 }}>
+            <Text style={{ fontSize: 12, marginTop: 6, color: '#6b7280' }}>
               {item.author?.name ? `By ${item.author.name} • ` : ''}
               {new Date(item.createdAt).toLocaleString()}
             </Text>
           </View>
         )}
-        ListEmptyComponent={<Text>No comments yet.</Text>}
+        ListEmptyComponent={<Text style={{ color: '#6b7280' }}>No comments yet.</Text>}
         ListFooterComponent={
           canLoadMore ? (
-            <Pressable
+            <Button
+              title="Load more"
+              variant="secondary"
+              loading={loadingMore}
               onPress={() => {
                 setLoadingMore(true);
                 load(page + 1);
               }}
-              disabled={loadingMore}
-              style={{
-                padding: 12,
-                borderWidth: 1,
-                borderRadius: 10,
-                alignItems: 'center',
-                marginTop: 12,
-              }}
-            >
-              {loadingMore ? <ActivityIndicator /> : <Text>Load more</Text>}
-            </Pressable>
+              style={{ marginTop: 12 }}
+            />
           ) : null
         }
       />
