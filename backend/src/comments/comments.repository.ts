@@ -32,11 +32,14 @@ export class CommentsRepository {
     });
   }
 
-  findByBurgerPaginated(input: FindCommentsByBurgerInput): Promise<CommentDocument[]> {
+  findByBurgerPaginated(
+    input: FindCommentsByBurgerInput,
+  ): Promise<CommentDocument[]> {
     const { burgerId, page, limit } = input;
     const skip = (page - 1) * limit;
 
-    return this.commentModel.find({ burger: new Types.ObjectId(burgerId) })
+    return this.commentModel
+      .find({ burger: new Types.ObjectId(burgerId) })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -44,6 +47,8 @@ export class CommentsRepository {
   }
 
   countByBurger(burgerId: string): Promise<number> {
-    return this.commentModel.countDocuments({ burger: new Types.ObjectId(burgerId) });
+    return this.commentModel.countDocuments({
+      burger: new Types.ObjectId(burgerId),
+    });
   }
 }

@@ -1,0 +1,20 @@
+export type LoginInput = {
+    email: string;
+    password: string;
+  };
+  
+  export type RegisterInput = {
+    name: string;
+    email: string;
+    password: string;
+  };
+  
+  export type AuthResponse = {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      isAdmin: boolean;
+    };
+    accessToken: string;
+  };

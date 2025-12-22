@@ -18,29 +18,32 @@ import { redisStore } from 'cache-manager-redis-store';
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        uri: await config.get<string>('MONGO_URI'),
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('MONGO_URI'),
       }),
       imports: [ConfigModule],
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60,
-      limit: 60,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 60,
+      },
+    ]),
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
         try {
+          const store = (await redisStore({
+            host: config.get<string>('REDIS_HOST', 'redis'),
+            port: config.get<number>('REDIS_PORT', 6379),
+          })) as unknown;
           return {
-            store: await redisStore({
-              host: config.get('REDIS_HOST', 'redis'),
-              port: config.get('REDIS_PORT', 6379),
-            }),
-            ttl: config.get('CACHE_TTL', 60),
+            store,
+            ttl: config.get<number>('CACHE_TTL', 60),
           };
-        } catch (e) {
+        } catch {
           console.warn('Redis not available, falling back to in-memory cache');
           return { ttl: config.get('CACHE_TTL', 60) };
         }

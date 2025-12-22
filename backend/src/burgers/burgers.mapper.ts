@@ -12,7 +12,9 @@ export class BurgersMapper {
       ingredients: burger.ingredients,
       image: burger.image,
       createdAt: burger.createdAt.toISOString(),
-      creator: burger.creator ? UsersMapper.toResponse(burger.creator as unknown as User) : null,
+      creator: burger.creator
+        ? UsersMapper.toResponse(burger.creator as unknown as User)
+        : null,
       commentsCount: burger.commentsCount ?? 0,
       collaboratorsCount: burger.collaborators?.length ?? 0,
     };
@@ -26,7 +28,9 @@ export class BurgersMapper {
       image: burger.image,
       createdAt: burger.createdAt.toISOString(),
       updatedAt: burger.updatedAt.toISOString(),
-      creator: burger.creator ? UsersMapper.toResponse(burger.creator as unknown as User) : null,
+      creator: burger.creator
+        ? UsersMapper.toResponse(burger.creator as unknown as User)
+        : null,
       commentsCount: burger.commentsCount ?? 0,
       collaboratorsCount: burger.collaboratorsCount ?? 0,
     };

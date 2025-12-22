@@ -14,6 +14,6 @@ import { CommentsRepository } from './comments.repository';
     BurgersModule,
   ],
   controllers: [CommentsController],
-  providers: [CommentsService, CommentsRepository]
+  providers: [CommentsService, CommentsRepository],
 })
 export class CommentsModule {}
